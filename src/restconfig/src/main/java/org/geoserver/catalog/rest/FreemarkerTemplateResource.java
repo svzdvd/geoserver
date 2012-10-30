@@ -76,7 +76,7 @@ public class FreemarkerTemplateResource extends StoreFileResource {
     private File doFileUpload() {
         try {
             getResponse().setStatus(Status.SUCCESS_ACCEPTED);
-            File directory = catalog.getResourceLoader().findOrCreateDirectory(getDirectoryPath());
+            File directory = catalog.getResourceLoader().findOrCreateDirectory(getDirectoryPath(getRequest()));
 
             if (LOGGER.isLoggable(Level.INFO)) {
                 MediaType mediaType = getRequest().getEntity().getMediaType();
@@ -91,10 +91,15 @@ public class FreemarkerTemplateResource extends StoreFileResource {
     
     private File getTemplateFile() {
         try {
-            File directory = catalog.getResourceLoader().find(getDirectoryPath());
+            File directory = catalog.getResourceLoader().find(getDirectoryPath(getRequest()));
             File templateFile = catalog.getResourceLoader().find(directory, 
                     getAttribute("template") + "." + MEDIATYPE_FTL_EXTENSION);        
             if (templateFile == null) {
+                if (LOGGER.isLoggable(Level.INFO)) {
+                    LOGGER.info("File not found: " + getDirectoryPathAsString(getRequest()) + "/" + 
+                            getAttribute("template") + "." + MEDIATYPE_FTL_EXTENSION);
+                }
+                
                 throw new RestletException("File Not Found", Status.CLIENT_ERROR_NOT_FOUND);            
             } else {
                 return templateFile;
@@ -102,6 +107,14 @@ public class FreemarkerTemplateResource extends StoreFileResource {
         } catch (IOException e) {
             throw new RestletException(e.getMessage(), Status.CLIENT_ERROR_NOT_FOUND, e);            
         }        
+    }
+
+    private String getDirectoryPathAsString(Request request) {
+        StringBuilder buff = new StringBuilder();
+        for (String path : getDirectoryPath(request)) {
+            buff.append("/").append(path);
+        }
+        return buff.toString();
     }
     
     /*
@@ -112,41 +125,31 @@ public class FreemarkerTemplateResource extends StoreFileResource {
      *  /workspaces/<ws>/coveragestores/<cs>/coverages/templates/<templateX>.ftl
      *  /workspaces/<ws>/coveragestores/<cs>/coverages/<c>/templates/<templateX>.ftl
      */
-    private String[] getDirectoryPath() {
-        String workspace = getAttribute("workspace");
-        String datastore = getAttribute("datastore");
-        String featureType = getAttribute("featuretype");
+    public static String[] getDirectoryPath(Request request) {
+        String workspace = RESTUtils.getAttribute(request, "workspace");
+        String datastore = RESTUtils.getAttribute(request, "datastore");
+        String featureType = RESTUtils.getAttribute(request, "featuretype");
 
-        String coveragestore = getAttribute("coveragestore");
-        String coverage = getAttribute("coverage");
+        String coveragestore = RESTUtils.getAttribute(request, "coveragestore");
+        String coverage = RESTUtils.getAttribute(request, "coverage");
 
         List<String> path = new ArrayList<String>();
-        path.add("data");
         path.add("workspaces");
         
         if (workspace != null) {
             path.add(workspace);
-            
             if (datastore != null) {
-                path.add("datastores");
                 path.add(datastore);
-                
                 if (featureType != null) {
-                    path.add("featuretypes");
                     path.add(featureType);                    
                 }
             } else if (coveragestore != null) {
-                path.add("coveragestores");
                 path.add(coveragestore);   
-                path.add("coverages");
-                
                 if (coverage != null) {
                     path.add(coverage);
                 }
             }
         }
-        
-        path.add("templates");
         
         return path.toArray(new String[] {});
     }

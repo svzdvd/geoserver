@@ -5,6 +5,55 @@
 <bean id="restConfigMapping" class="org.geoserver.rest.RESTMapping">
 <property name="routes">
   <map>
+          <entry>
+            <key><value>/workspaces/templates/{template}.ftl</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/templates/index.{format}</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>        
+        <entry>
+            <key><value>/workspaces/{workspace}/templates/{template}.ftl</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/templates/index.{format}</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>        
+        <entry>
+            <key><value>/workspaces/{workspace}/datastores/{datastore}/templates/{template}.ftl</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/datastores/{datastore}/templates/index.{format}</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>        
+        <entry>
+            <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes/{featuretype}/templates/{template}.ftl</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes/{featuretype}/templates/index.{format}</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>        
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/templates/{template}.ftl</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/templates/index.{format}</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>        
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/templates/{template}.ftl</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
+        <entry>
+            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/templates/index.{format}</value></key>
+            <value>freemarkerTemplateFinder</value>
+        </entry>
+  
         <entry>
           <key><value>/workspaces/{workspace}.{type}</value></key>
           <value>workspaceFinder</value>
@@ -395,32 +444,7 @@
         <entry>
             <key><value>/services/wcs/{workspace}/settings.{format}</value></key>
             <value>wcsSettingsFinder</value>
-        </entry>
-
-        <entry>
-            <key><value>/workspaces/templates/{template}.ftl</value></key>
-            <value>freemarkerTemplateFinder</value>
-        </entry>
-        <entry>
-            <key><value>/workspaces/{workspace}/templates/{template}.ftl</value></key>
-            <value>freemarkerTemplateFinder</value>
-        </entry>
-        <entry>
-            <key><value>/workspaces/{workspace}/datastores/{datastore}/templates/{template}.ftl</value></key>
-            <value>freemarkerTemplateFinder</value>
-        </entry>
-        <entry>
-            <key><value>/workspaces/{workspace}/datastores/{datastore}/featuretypes/{featuretype}/templates/{template}.ftl</value></key>
-            <value>freemarkerTemplateFinder</value>
-        </entry>
-        <entry>
-            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/templates/{template}.ftl</value></key>
-            <value>freemarkerTemplateFinder</value>
-        </entry>
-        <entry>
-            <key><value>/workspaces/{workspace}/coveragestores/{coveragestore}/coverages/{coverage}/templates/{template}.ftl</value></key>
-            <value>freemarkerTemplateFinder</value>
-        </entry>
+        </entry>        
   </map>
 </property>
 </bean>

@@ -18,6 +18,10 @@ public class FreemarkerTemplateFinder extends AbstractCatalogFinder {
 
     @Override
     public Resource findTarget(Request request, Response response) {
-        return new FreemarkerTemplateResource(request, response, catalog);
+        if (request.getResourceRef().getLastSegment().endsWith(".ftl")) {
+            return new FreemarkerTemplateResource(request, response, catalog);
+        } else {
+            return new FreemarkerTemplateListResource(getContext(), request, response, catalog);
+        }
     }
 }
