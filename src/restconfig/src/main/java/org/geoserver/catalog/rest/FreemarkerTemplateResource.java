@@ -109,7 +109,7 @@ public class FreemarkerTemplateResource extends StoreFileResource {
         }        
     }
 
-    private String getDirectoryPathAsString(Request request) {
+    public static String getDirectoryPathAsString(Request request) {
         StringBuilder buff = new StringBuilder();
         for (String path : getDirectoryPath(request)) {
             buff.append("/").append(path);

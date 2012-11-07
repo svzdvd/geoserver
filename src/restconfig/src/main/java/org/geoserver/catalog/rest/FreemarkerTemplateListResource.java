@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.geoserver.catalog.Catalog;
+import org.geoserver.rest.format.DataFormat;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -62,5 +63,11 @@ public class FreemarkerTemplateListResource extends AbstractCatalogListResource 
             list.add(new FreemarkerTemplateInfo(file));
         }
         return list;
+    }
+    
+    @Override
+    String href(String link, DataFormat format) {
+        return getPageInfo().getBaseURL() + getPageInfo().getRootPath() +
+                FreemarkerTemplateResource.getDirectoryPathAsString(getRequest()) + "/templates/" + link;
     }
 }
