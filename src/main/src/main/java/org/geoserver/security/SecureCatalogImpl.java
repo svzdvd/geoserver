@@ -23,6 +23,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.catalog.LayerGroupVisibilityPolicy;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -36,6 +37,7 @@ import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.event.CatalogListener;
 import org.geoserver.catalog.impl.AbstractDecorator;
+import org.geoserver.catalog.impl.LayerGroupVisibilityPolicyHideIfSomeLayerHidden;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.catalog.util.CloseableIteratorAdapter;
 import org.geoserver.ows.Dispatcher;
@@ -75,7 +77,8 @@ import com.google.common.collect.ImmutableList;
 public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Catalog {
 
     protected ResourceAccessManager accessManager;
-
+    protected LayerGroupVisibilityPolicy layerGroupPolicy = new LayerGroupVisibilityPolicyHideIfSomeLayerHidden();
+    
     public SecureCatalogImpl(Catalog catalog) throws Exception {
         this(catalog, lookupResourceAccessManager());
     }
@@ -84,6 +87,10 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
         return delegate.getId();
     }
 
+    public void setLayerGroupVisibilityPolicy(LayerGroupVisibilityPolicy layerGroupPolicy) {
+        this.layerGroupPolicy = layerGroupPolicy;
+    }     
+    
     public ResourceAccessManager getResourceAccessManager() {
         return accessManager;
     }
@@ -607,24 +614,30 @@ public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Cat
             return null;
         }
 
-        // scan thru the layers, if any cannot be accessed, we hide the group, otherwise
-        // we return the group back, eventually wrapping the read only layers
+        // scan thru the layers
         final List<LayerInfo> layers = group.getLayers();
         ArrayList<LayerInfo> wrapped = new ArrayList<LayerInfo>(layers.size());
         boolean needsWrapping = false;
         for (LayerInfo layer : layers) {
             LayerInfo checked = checkAccess(user, layer);
-            if(checked == null)
-                return null;
-            else if(checked != null && checked != layer) 
-                needsWrapping = true;
-            wrapped.add(checked);
+            if (checked != null) {
+                if (checked != layer) {
+                    needsWrapping = true;
+                }
+                wrapped.add(checked);
+            } else {
+                needsWrapping = true; 
+            }
         }
         
-        if(needsWrapping)
-            return new SecuredLayerGroupInfo(group, wrapped);
-        else
-            return group;
+        if (layerGroupPolicy.hideLayerGroup(group, wrapped)) {
+            return null;
+        } else {
+            if(needsWrapping)
+                return new SecuredLayerGroupInfo(group, wrapped);
+            else
+                return group;            
+        }
     }
 
     /**
