@@ -645,13 +645,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             // handle identifiers
             handleLayerIdentifiers(serviceInfo.getIdentifiers());
 
-            // now encode each layer individually
-            LayerTree featuresLayerTree = new LayerTree(layers);
-            handleLayerTree(featuresLayerTree);
-
+            Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
+            
+            // encode layer groups
             try {
                 List<LayerGroupInfo> layerGroups = wmsConfig.getLayerGroups();
-                handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups));
+                layersAlreadyProcessed = handleLayerGroups(new ArrayList<LayerGroupInfo>(layerGroups));
             } catch (FactoryException e) {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
@@ -659,6 +658,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 throw new RuntimeException("Can't obtain Envelope of Layer-Groups: "
                         + e.getMessage(), e);
             }
+            
+            // now encode each layer individually
+            LayerTree featuresLayerTree = new LayerTree(layers);
+            handleLayerTree(featuresLayerTree, layersAlreadyProcessed);
 
             end("Layer");
         }
@@ -734,10 +737,27 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             handleAdditionalBBox(new ReferencedEnvelope(latlonBbox, DefaultGeographicCRS.WGS84), null, null);
         }
 
+        private boolean isExposable(LayerInfo layer) {
+            boolean wmsExposable = false;
+            if (layer.getType() == Type.RASTER || layer.getType() == Type.WMS) {
+                wmsExposable = true;
+            } else {
+                try {
+                    wmsExposable = layer.getType() == Type.VECTOR
+                            && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
+                                    .getGeometryDescriptor() != null;
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "An error occurred trying to determine if"
+                            + " the layer is geometryless", e);
+                }
+            }
+            return wmsExposable;   
+        }
+        
         /**
          * @param layerTree
          */
-        private void handleLayerTree(final LayerTree layerTree) {
+        private void handleLayerTree(final LayerTree layerTree, Set<LayerInfo> layersAlreadyProcessed) {
             final List<LayerInfo> data = new ArrayList<LayerInfo>(layerTree.getData());
             final Collection<LayerTree> children = layerTree.getChildrens();
 
@@ -748,23 +768,9 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             });
 
             for (LayerInfo layer : data) {
-                // no sense in exposing a geometryless layer through wms...
-                boolean wmsExposable = false;
-                if (layer.getType() == Type.RASTER || layer.getType() == Type.WMS) {
-                    wmsExposable = true;
-                } else {
-                    try {
-                        wmsExposable = layer.getType() == Type.VECTOR
-                                && ((FeatureTypeInfo) layer.getResource()).getFeatureType()
-                                        .getGeometryDescriptor() != null;
-                    } catch (Exception e) {
-                        LOGGER.log(Level.SEVERE, "An error occurred trying to determine if"
-                                + " the layer is geometryless", e);
-                    }
-                }
-                
                 // ask for enabled() instead of isEnabled() to account for disabled resource/store
-                if (layer.enabled() && wmsExposable) {
+                // don't expose a geometryless layer through wms
+                if (layer.enabled() && !layersAlreadyProcessed.contains(layer) && isExposable(layer)) {
                     try {
                         mark();
                         handleLayer(layer);
@@ -790,7 +796,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 start("Layer");
                 element("Name", childLayerTree.getName());
                 element("Title", childLayerTree.getName());
-                handleLayerTree(childLayerTree);
+                handleLayerTree(childLayerTree, layersAlreadyProcessed);
                 end("Layer");
             }
         }
@@ -934,10 +940,12 @@ public class GetCapabilitiesTransformer extends TransformerBase {
            return srs;
         }
 
-        protected void handleLayerGroups(List<LayerGroupInfo> layerGroups) throws FactoryException,
+        protected Set<LayerInfo> handleLayerGroups(List<LayerGroupInfo> layerGroups) throws FactoryException,
                 TransformException {
+            Set<LayerInfo> layersAlreadyProcessed = new HashSet<LayerInfo>();
+            
             if (layerGroups == null || layerGroups.size() == 0) {
-                return;
+                return layersAlreadyProcessed;
             }
 
             Collections.sort(layerGroups, new Comparator<LayerGroupInfo>() {
@@ -999,12 +1007,22 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 }
                 handleMetadataList(aggregatedLinks);
 
+                if (!LayerGroupInfo.Type.SINGLE.equals(layerGroup.getType())) {
+                    for (LayerInfo layer : layers) {
+                        handleLayer(layer);
+                        layersAlreadyProcessed.add(layer);
+                    }
+                }
+                // TODO style?     
+                
                 // the layer style is not provided since the group does just have
                 // one possibility, the lack of styles that will make it use
                 // the default ones for each layer
 
                 end("Layer");
             }
+            
+            return layersAlreadyProcessed;
         }
 
         protected void handleAttribution(LayerInfo layer) {

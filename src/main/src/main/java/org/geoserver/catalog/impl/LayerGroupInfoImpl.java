@@ -21,6 +21,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     protected String id;
     protected String name;
+    protected Type type = Type.SINGLE;
     
     /**
      * This property in 2.2.x series is stored under the metadata map with key 'title'.
@@ -34,6 +35,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     
     protected WorkspaceInfo workspace;
     protected String path;
+    protected LayerInfo rootLayer;
+    protected StyleInfo rootLayerStyle;
     protected List<LayerInfo> layers = new ArrayList<LayerInfo>();
     protected List<StyleInfo> styles = new ArrayList<StyleInfo>();
     protected ReferencedEnvelope bounds;
@@ -73,6 +76,14 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         this.name = name;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+       
     public String getTitle() {
         if(title == null && metadata != null) {
             title = metadata.get("title", String.class);
@@ -116,12 +127,54 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         this.path = path;
     }
     
+    public LayerInfo getRootLayer() {
+        return rootLayer;
+    }
+
+    public void setRootLayer(LayerInfo rootLayer) {
+        this.rootLayer = rootLayer;
+    }
+    
+    public StyleInfo getRootLayerStyle() {
+        return rootLayerStyle;
+    }
+
+    public void setRootLayerStyle(StyleInfo style) {
+        this.rootLayerStyle = style;
+    }
+    
     public List<LayerInfo> getLayers() {
         return layers;
     }
 
     public void setLayers(List<LayerInfo> layers) {
         this.layers = layers;
+    }
+    
+    public List<LayerInfo> getRenderingLayers() {
+        switch (getType()) {
+        case CONTAINER:
+            throw new UnsupportedOperationException("LayerGroup type " + Type.CONTAINER.getName() + " can not be rendered");
+        case EO:
+            List<LayerInfo> rootLayerList = new ArrayList<LayerInfo>(1);
+            rootLayerList.add(getRootLayer());
+            return rootLayerList;
+        default:
+            return getLayers();
+        }
+    }
+    
+    public List<StyleInfo> getRenderingStyles() {
+        switch (getType()) {
+        case CONTAINER:
+            throw new UnsupportedOperationException("LayerGroup type " + Type.CONTAINER.getName() + " can not be rendered");
+        case EO:
+            List<StyleInfo> rootLayerStyleList = new ArrayList<StyleInfo>(1);
+            rootLayerStyleList.add(getRootLayerStyle());
+            return rootLayerStyleList;
+        default:
+            return getStyles();
+        }        
     }
     
     public List<StyleInfo> getStyles() {
@@ -161,6 +214,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         result = prime * result + ((layers == null) ? 0 : layers.hashCode());
         result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((title == null) ? 0 : title.hashCode());
         result = prime * result + ((abstractTxt == null) ? 0 : abstractTxt.hashCode());
         result = prime * result + ((workspace == null) ? 0 : workspace.hashCode());
@@ -205,6 +259,11 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
                 return false;
         } else if (!name.equals(other.getName()))
             return false;
+        if (type == null) {
+            if (other.getType() != null)
+                return false;
+        } else if (!type.equals(other.getType()))
+            return false;        
         if (title == null) {
             if (other.getTitle() != null) {
                 return false;

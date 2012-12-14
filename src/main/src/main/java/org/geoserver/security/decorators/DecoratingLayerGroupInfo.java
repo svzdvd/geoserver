@@ -37,14 +37,34 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
         return delegate.getId();
     }
 
+    public LayerInfo getRootLayer() {
+        return delegate.getRootLayer();
+    }
+    
+    public StyleInfo getRootLayerStyle() {
+        return delegate.getRootLayerStyle();
+    }   
+    
     public List<LayerInfo> getLayers() {
         return delegate.getLayers();
     }
 
+    public List<LayerInfo> getRenderingLayers() {
+        return delegate.getRenderingLayers();
+    }    
+    
+    public List<StyleInfo> getRenderingStyles() {
+        return delegate.getRenderingStyles();
+    }
+    
     public String getName() {
         return delegate.getName();
     }
 
+    public Type getType() {
+        return delegate.getType();
+    }
+    
     public WorkspaceInfo getWorkspace() {
         return delegate.getWorkspace();
     }
@@ -57,6 +77,14 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
         return delegate.getStyles();
     }
 
+    public void setRootLayer(LayerInfo rootLayer) {
+        delegate.setRootLayer(rootLayer);
+    }
+
+    public void setRootLayerStyle(StyleInfo style) {
+        delegate.setRootLayerStyle(style);
+    }    
+    
     public void setBounds(ReferencedEnvelope bounds) {
         delegate.setBounds(bounds);
     }
@@ -65,6 +93,10 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
         delegate.setName(name);
     }
 
+    public void setType(Type type) {
+        delegate.setType(type);
+    }
+    
     public void setWorkspace(WorkspaceInfo workspace) {
         delegate.setWorkspace(workspace);
     }
