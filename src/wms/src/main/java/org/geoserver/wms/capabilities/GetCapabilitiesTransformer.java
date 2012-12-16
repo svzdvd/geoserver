@@ -660,8 +660,7 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             }
             
             // now encode each layer individually
-            LayerTree featuresLayerTree = new LayerTree(layers);
-            handleLayerTree(featuresLayerTree, layersAlreadyProcessed);
+            handleLayers(layers, layersAlreadyProcessed);
 
             end("Layer");
         }
@@ -757,17 +756,14 @@ public class GetCapabilitiesTransformer extends TransformerBase {
         /**
          * @param layerTree
          */
-        private void handleLayerTree(final LayerTree layerTree, Set<LayerInfo> layersAlreadyProcessed) {
-            final List<LayerInfo> data = new ArrayList<LayerInfo>(layerTree.getData());
-            final Collection<LayerTree> children = layerTree.getChildrens();
-
-            Collections.sort(data, new Comparator<LayerInfo>() {
+        private void handleLayers(List<LayerInfo> layers, Set<LayerInfo> layersAlreadyProcessed) {
+            Collections.sort(layers, new Comparator<LayerInfo>() {
                 public int compare(LayerInfo o1, LayerInfo o2) {
                     return o1.getName().compareTo(o2.getName());
                 }
             });
 
-            for (LayerInfo layer : data) {
+            for (LayerInfo layer : layers) {
                 // ask for enabled() instead of isEnabled() to account for disabled resource/store
                 // don't expose a geometryless layer through wms
                 if (layer.enabled() && !layersAlreadyProcessed.contains(layer) && isExposable(layer)) {
@@ -790,14 +786,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                         }
                     }
                 }
-            }
-
-            for (LayerTree childLayerTree : children) {
-                start("Layer");
-                element("Name", childLayerTree.getName());
-                element("Title", childLayerTree.getName());
-                handleLayerTree(childLayerTree, layersAlreadyProcessed);
-                end("Layer");
             }
         }
 

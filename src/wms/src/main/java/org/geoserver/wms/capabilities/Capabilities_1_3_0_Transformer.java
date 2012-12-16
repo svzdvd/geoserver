@@ -677,7 +677,7 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
             SortBy layerOrder = asc("name");
             layers = catalog.list(LayerInfo.class, filter, null, null, layerOrder);
             try {
-                handleLayerTree(layers, layersAlreadyProcessed);
+                handleLayers(layers, layersAlreadyProcessed);
             } finally {
                 layers.close();
             }
@@ -780,57 +780,14 @@ public class Capabilities_1_3_0_Transformer extends TransformerBase {
                 new ReferencedEnvelope(latlonBbox, DefaultGeographicCRS.WGS84), null, null);
         }
 
-        private void handleLayerTree(final Iterator<LayerInfo> layers, Set<LayerInfo> layersAlreadyProcessed) {
-            // Build a LayerTree only for the layers that have a wms path set. Process the ones that
-            // don't first
-            LayerTree nestedLayers = new LayerTree();
-            
-            //handle non nested layers
+        private void handleLayers(final Iterator<LayerInfo> layers, Set<LayerInfo> layersAlreadyProcessed) {
             while (layers.hasNext()) {
                 LayerInfo layer = layers.next();
                 if(layersAlreadyProcessed.contains(layer) || !isExposable(layer)){
                     continue;
                 }
-                final String path = layer.getPath();
-                if(path != null && path.length() > 0 && !"/".equals(path)){
-                    nestedLayers.add(layer);
-                    continue;
-                }
 
                 doHandleLayer(layer);
-            }
-            
-            //handle nested layers
-            handleLayerTree(nestedLayers);
-        }
-        
-        /**
-         * @param layerTree
-         */
-        private void handleLayerTree(final LayerTree layerTree) {
-            final List<LayerInfo> data = new ArrayList<LayerInfo>(layerTree.getData());
-            final Collection<LayerTree> children = layerTree.getChildrens();
-
-            Collections.sort(data, new Comparator<LayerInfo>() {
-                public int compare(LayerInfo o1, LayerInfo o2) {
-                    return o1.getName().compareTo(o2.getName());
-                }
-            });
-
-            for (LayerInfo layer : data) {
-                // no sense in exposing a geometryless layer through wms...
-                boolean wmsExposable = isExposable(layer);
-                if (wmsExposable) {
-                    doHandleLayer(layer);
-                }
-            }
-
-            for (LayerTree childLayerTree : children) {
-                start("Layer");
-                element("Name", childLayerTree.getName());
-                element("Title", childLayerTree.getName());
-                handleLayerTree(childLayerTree);
-                end("Layer");
             }
         }
 

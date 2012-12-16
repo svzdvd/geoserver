@@ -105,8 +105,6 @@ public class WMSLayerConfig extends LayerConfigurationPanel {
         TextField renderingBuffer = new TextField("renderingBuffer", new MapModel(new PropertyModel(layerModel, "metadata"), LayerInfo.BUFFER), Integer.class);
         renderingBuffer.add(NumberValidator.minimum(0));
         styleContainer.add(renderingBuffer);
-        
-        add(new TextField("wmsPath", new PropertyModel(layerModel, "path")));
 
         // authority URLs and identifiers for this layer
         LayerAuthoritiesAndIdentifiersPanel authAndIds;

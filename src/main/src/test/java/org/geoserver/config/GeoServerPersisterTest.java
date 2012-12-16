@@ -454,14 +454,14 @@ public class GeoServerPersisterTest extends GeoServerSystemTestSupport {
         testAddLayer();
         
         LayerInfo l = catalog.getLayerByName( "foo" );
-        l.setPath( "/foo/bar" );
+        l.setEnabled( true );
         catalog.save( l );
         
         File f = new File( testData.getDataDirectoryRoot(), 
             "workspaces/acme/foostore/foo/layer.xml");
         Document dom = dom( f );
         
-        assertXpathEvaluatesTo( "/foo/bar", "/layer/path", dom );
+        assertXpathEvaluatesTo( "true", "/layer/enabled", dom );
     }
     
     @Test

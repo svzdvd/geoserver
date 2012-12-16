@@ -35,7 +35,7 @@ public class LayerInfoImpl implements LayerInfo {
     // TODO: revert to normal property when the resource/publishing split is done
     transient protected String name;
 
-    protected String path;
+    protected String pathNotUsedAnymore;
 
     protected LayerInfo.Type type;
 
@@ -116,11 +116,11 @@ public class LayerInfoImpl implements LayerInfo {
     }
 
     public String getPath() {
-        return path;
+        return pathNotUsedAnymore;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setPath(String pathNotUsedAnymore) {
+        this.pathNotUsedAnymore = pathNotUsedAnymore;
     }
 
     public StyleInfo getDefaultStyle() {
@@ -208,7 +208,6 @@ public class LayerInfoImpl implements LayerInfo {
         result = prime * result + ((legend == null) ? 0 : legend.hashCode());
         // TODO: add back when resource publish split is in place
         // result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((path == null) ? 0 : path.hashCode());
         result = prime * result
                 + ((resource == null) ? 0 : resource.hashCode());
         result = prime * result + ((styles == null) ? 0 : styles.hashCode());
@@ -250,11 +249,6 @@ public class LayerInfoImpl implements LayerInfo {
 //                return false;
 //        } else if (!name.equals(other.getName()))
 //            return false;
-        if (path == null) {
-            if (other.getPath() != null)
-                return false;
-        } else if (!path.equals(other.getPath()))
-            return false;
         if (resource == null) {
             if (other.getResource() != null)
                 return false;

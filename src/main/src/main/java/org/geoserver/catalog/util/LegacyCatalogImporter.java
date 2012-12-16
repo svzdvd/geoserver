@@ -163,10 +163,6 @@ public class LegacyCatalogImporter {
                 LayerInfo layer = factory.createLayer();
                 layer.setResource(featureType);
                 layer.setName(featureType.getName());
-                layer.setPath(ftInfoReader.wmsPath());
-                if ( layer.getPath() == null ) {
-                    layer.setPath( "/" );
-                }
                 layer.setType(LayerInfo.Type.VECTOR);
                
                 String defaultStyleName = ftInfoReader.defaultStyle();
@@ -236,10 +232,6 @@ public class LegacyCatalogImporter {
                 LayerInfo layer = factory.createLayer();
                 layer.setResource(coverage);
                 layer.setName(coverage.getName());
-                layer.setPath(cInfoReader.wmsPath());
-                if ( layer.getPath() == null ) {
-                    layer.setPath( "/" );
-                }
                 layer.setType(LayerInfo.Type.RASTER);
                 
                 String defaultStyleName = cInfoReader.defaultStyle();

@@ -1204,15 +1204,15 @@ public class CatalogImplTest {
         assertEquals( l, tl.added.get(0).getSource() );
         
         LayerInfo l2 = catalog.getLayerByName( l.getName() );
-        l2.setPath( "newPath" );
+        l2.setAdvertised( false );
         
         assertTrue( tl.modified.isEmpty() );
         catalog.save( l2 );
         assertEquals( 1, tl.modified.size() );
         assertEquals( l2, tl.modified.get(0).getSource() );
-        assertTrue( tl.modified.get(0).getPropertyNames().contains( "path") );
-        assertTrue( tl.modified.get(0).getOldValues().contains( null ) );
-        assertTrue( tl.modified.get(0).getNewValues().contains( "newPath") );
+        assertTrue( tl.modified.get(0).getPropertyNames().contains( "advertised") );
+        assertTrue( tl.modified.get(0).getOldValues().contains( Boolean.TRUE ) );
+        assertTrue( tl.modified.get(0).getNewValues().contains( Boolean.FALSE ) );
         
         assertTrue( tl.removed.isEmpty() );
         catalog.remove( l2 );
