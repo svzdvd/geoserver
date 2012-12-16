@@ -815,6 +815,27 @@ public class CatalogImpl implements Catalog {
                 
             }
         }
+        
+        if (layerGroup.getType() == null) {
+            throw new IllegalArgumentException("Layer group type must not be null");
+        } else if (LayerGroupInfo.Type.EO.equals(layerGroup.getType())) {
+            if (layerGroup.getRootLayer() == null) {
+                throw new IllegalArgumentException("Layer group of type " + LayerGroupInfo.Type.EO.getName() + " must have a root layer"); 
+            }
+            
+            if (layerGroup.getRootLayerStyle() == null) {
+                throw new IllegalArgumentException("Layer group of type " + LayerGroupInfo.Type.EO.getName() + " must have a root layer style");                 
+            }
+        } else {
+            if (layerGroup.getRootLayer() != null) {
+                throw new IllegalArgumentException("Layer group of type " + layerGroup.getType().getName() + " must not have a root layer"); 
+            }
+            
+            if (layerGroup.getRootLayerStyle() != null) {
+                throw new IllegalArgumentException("Layer group of type " + layerGroup.getType().getName() + " must not have a root layer style");                 
+            }            
+        }
+        
         return postValidate(layerGroup, isNew);
    }
     
