@@ -151,7 +151,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         this.layers = layers;
     }
     
-    public List<LayerInfo> getRenderingLayers() {
+    public List<LayerInfo> renderingLayers() {
         switch (getType()) {
         case CONTAINER:
             throw new UnsupportedOperationException("LayerGroup type " + Type.CONTAINER.getName() + " can not be rendered");
@@ -164,7 +164,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         }
     }
     
-    public List<StyleInfo> getRenderingStyles() {
+    public List<StyleInfo> renderingStyles() {
         switch (getType()) {
         case CONTAINER:
             throw new UnsupportedOperationException("LayerGroup type " + Type.CONTAINER.getName() + " can not be rendered");

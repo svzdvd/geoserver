@@ -49,12 +49,12 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
         return delegate.getLayers();
     }
 
-    public List<LayerInfo> getRenderingLayers() {
-        return delegate.getRenderingLayers();
+    public List<LayerInfo> renderingLayers() {
+        return delegate.renderingLayers();
     }    
     
-    public List<StyleInfo> getRenderingStyles() {
-        return delegate.getRenderingStyles();
+    public List<StyleInfo> renderingStyles() {
+        return delegate.renderingStyles();
     }
     
     public String getName() {

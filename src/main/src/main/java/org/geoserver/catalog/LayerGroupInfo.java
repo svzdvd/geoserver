@@ -162,15 +162,15 @@ public interface LayerGroupInfo extends CatalogInfo {
     /**
      * The layers that should be rendered.
      */
-    List<LayerInfo> getRenderingLayers();
+    List<LayerInfo> renderingLayers();
     
     /**
      * The styles for the layers that should be rendered.
      * <p>
-     * This list is a 1-1 correspondence to {@link #getRenderingLayers()}.
+     * This list is a 1-1 correspondence to {@link #renderingLayers()}.
      * </p>
      */
-    List<StyleInfo> getRenderingStyles();
+    List<StyleInfo> renderingStyles();
     
     /**
      * The bounds for the base map.
