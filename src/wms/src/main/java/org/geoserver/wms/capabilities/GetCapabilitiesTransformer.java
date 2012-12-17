@@ -964,7 +964,10 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 // qatts.addAttribute("", "opaque", "opaque", "", "1");
                 // qatts.addAttribute("", "cascaded", "cascaded", "", "1");
                 start("Layer", qatts);
-                element("Name", layerName);
+                
+                if (!LayerGroupInfo.Type.CONTAINER.equals(layerGroup.getType())) {
+                    element("Name", layerName);
+                }                
                 
                 if (StringUtils.isEmpty(layerGroup.getTitle())) {
                     element("Title", layerName);                    
