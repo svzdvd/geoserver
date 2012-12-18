@@ -4,6 +4,7 @@
  */
 package org.geoserver.security.decorators;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.geoserver.catalog.AuthorityURLInfo;
@@ -14,6 +15,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.LayerGroupInfo.Type;
 import org.geoserver.catalog.impl.AbstractDecorator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
@@ -49,12 +51,38 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
         return delegate.getLayers();
     }
 
+    /**
+     * Warning: method content should be the same as LayerGroupInfoImpl#renderingLayers()
+     * @Override
+     */
     public List<LayerInfo> renderingLayers() {
-        return delegate.renderingLayers();
-    }    
+        switch (getType()) {
+        case CONTAINER:
+            throw new UnsupportedOperationException("LayerGroup type " + Type.CONTAINER.getName() + " can not be rendered");
+        case EO:
+            List<LayerInfo> rootLayerList = new ArrayList<LayerInfo>(1);
+            rootLayerList.add(getRootLayer());
+            return rootLayerList;
+        default:
+            return getLayers();
+        }
+    }
     
+    /**
+     * Warning: method content should be the same as LayerGroupInfoImpl#renderingStyles()
+     * @Override
+     */    
     public List<StyleInfo> renderingStyles() {
-        return delegate.renderingStyles();
+        switch (getType()) {
+        case CONTAINER:
+            throw new UnsupportedOperationException("LayerGroup type " + Type.CONTAINER.getName() + " can not be rendered");
+        case EO:
+            List<StyleInfo> rootLayerStyleList = new ArrayList<StyleInfo>(1);
+            rootLayerStyleList.add(getRootLayerStyle());
+            return rootLayerStyleList;
+        default:
+            return getStyles();
+        }        
     }
     
     public String getName() {
