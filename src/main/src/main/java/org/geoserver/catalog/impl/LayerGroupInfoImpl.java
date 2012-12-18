@@ -61,6 +61,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     public LayerGroupInfoImpl() {
     }
     
+    @Override
     public String getId() {
         return id;
     }
@@ -69,21 +70,27 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         this.id = id;
     }
     
+    @Override
     public String getName() {
         return name;
     }
+    
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public Type getType() {
         return type;
     }
 
+    @Override
     public void setType(Type type) {
         this.type = type;
     }
        
+    @Override
     public String getTitle() {
         if(title == null && metadata != null) {
             title = metadata.get("title", String.class);
@@ -91,10 +98,12 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         return title;
     }
     
+    @Override
     public void setTitle(String title) {
         this.title = title;
     }
     
+    @Override
     public String getAbstract() {
         if(abstractTxt == null && metadata != null) {
             abstractTxt = metadata.get("title", String.class);
@@ -102,19 +111,22 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         return abstractTxt;
     }
     
+    @Override
     public void setAbstract(String abstractTxt) {
         this.abstractTxt = abstractTxt;
     }
     
-    
+    @Override
     public WorkspaceInfo getWorkspace() {
         return workspace;
     }
 
+    @Override
     public void setWorkspace(WorkspaceInfo workspace) {
         this.workspace = workspace;
     }
 
+    @Override
     public String prefixedName() {
         return workspace != null ? workspace.getName()+":"+name : name;
     }
@@ -127,22 +139,27 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         this.path = path;
     }
     
+    @Override
     public LayerInfo getRootLayer() {
         return rootLayer;
     }
-
+    
+    @Override
     public void setRootLayer(LayerInfo rootLayer) {
         this.rootLayer = rootLayer;
     }
     
+    @Override
     public StyleInfo getRootLayerStyle() {
         return rootLayerStyle;
     }
 
+    @Override
     public void setRootLayerStyle(StyleInfo style) {
         this.rootLayerStyle = style;
     }
     
+    @Override
     public List<LayerInfo> getLayers() {
         return layers;
     }
@@ -151,6 +168,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         this.layers = layers;
     }
     
+    @Override
     public List<LayerInfo> renderingLayers() {
         switch (getType()) {
         case CONTAINER:
@@ -164,6 +182,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         }
     }
     
+    @Override
     public List<StyleInfo> renderingStyles() {
         switch (getType()) {
         case CONTAINER:
@@ -177,6 +196,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         }        
     }
     
+    @Override
     public List<StyleInfo> getStyles() {
         return styles;
     }
@@ -185,14 +205,17 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         this.styles = styles;
     }
     
+    @Override
     public ReferencedEnvelope getBounds() {
         return bounds;
     }
     
+    @Override
     public void setBounds(ReferencedEnvelope bounds) {
         this.bounds = bounds;
     }
     
+    @Override
     public MetadataMap getMetadata() {
         return metadata;
     }
@@ -201,6 +224,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         this.metadata = metadata;
     }
     
+    @Override
     public void accept(CatalogVisitor visitor) {
         visitor.visit(this);
     }
@@ -220,6 +244,8 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         result = prime * result + ((workspace == null) ? 0 : workspace.hashCode());
         result = prime * result + ((path == null) ? 0 : path.hashCode());
         result = prime * result + ((styles == null) ? 0 : styles.hashCode());
+        result = prime * result + ((rootLayer == null) ? 0 : rootLayer.hashCode());
+        result = prime * result + ((rootLayerStyle == null) ? 0 : rootLayerStyle.hashCode());        
         result = prime * result + ((authorityURLs == null) ? 0 : authorityURLs.hashCode());
         result = prime * result + ((identifiers == null) ? 0 : identifiers.hashCode());
         return result;
@@ -298,9 +324,26 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         } else if (!identifiers.equals(other.getIdentifiers()))
             return false;
         
+        if(identifiers == null){
+            if (other.getIdentifiers() != null)
+                return false;
+        } else if (!identifiers.equals(other.getIdentifiers()))
+            return false;
+
+        if(rootLayer == null){
+            if (other.getRootLayer() != null)
+                return false;
+        } else if (!rootLayer.equals(other.getRootLayer()))
+            return false;
+        
+        if(rootLayerStyle == null){
+            if (other.getRootLayerStyle() != null)
+                return false;
+        } else if (!rootLayerStyle.equals(other.getRootLayerStyle()))
+            return false;
+        
         return true;
     }
-    
 
     @Override
     public List<AuthorityURLInfo> getAuthorityURLs() {
