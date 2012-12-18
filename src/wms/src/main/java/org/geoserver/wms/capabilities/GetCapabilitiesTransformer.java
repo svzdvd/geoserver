@@ -1,4 +1,4 @@
-/* Copyright (c) 2001 - 2007 TOPP - www.openplans.org.  All rights reserved.
+/* Copyright (c) 2001 - 2012 TOPP - www.openplans.org.  All rights reserved.
  * This code is licensed under the GPL 2.0 license, availible at the root
  * application directory.
  */
@@ -868,9 +868,6 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             }
 
             // handle dimensions
-            String timeMetadata = null;
-            String elevationMetadata = null;
-            
             if (layer.getType() == Type.VECTOR) {
                 dimensionHelper.handleVectorLayerDimensions(layer);
             } else if (layer.getType() == Type.RASTER) {
@@ -993,6 +990,16 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 handleLatLonBBox(latLonBounds);
                 handleBBox(layerGroupBounds, authority);
 
+                // handle dimensions
+                if (LayerGroupInfo.Type.EO.equals(layerGroup.getType())) {
+                    LayerInfo rootLayer = layerGroup.getRootLayer();
+                    if (rootLayer.getType() == Type.VECTOR) {
+                        dimensionHelper.handleVectorLayerDimensions(rootLayer);
+                    } else if (rootLayer.getType() == Type.RASTER) {
+                        dimensionHelper.handleRasterLayerDimensions(rootLayer);
+                    }
+                }
+                
                 // handle AuthorityURL
                 handleAuthorityURL(layerGroup.getAuthorityURLs());
                 
