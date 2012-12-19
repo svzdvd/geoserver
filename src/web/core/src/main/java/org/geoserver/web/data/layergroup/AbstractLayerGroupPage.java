@@ -235,6 +235,10 @@ public abstract class AbstractLayerGroupPage extends GeoServerSecuredPage {
                 if (!LayerGroupInfo.Type.EO.equals(lg.getType())) {
                     lg.setRootLayer(null);
                     lg.setRootLayerStyle(null);
+                } else {
+                    if (lg.getRootLayerStyle() == null && lg.getRootLayer() != null) {
+                        lg.setRootLayerStyle(lg.getRootLayer().getDefaultStyle());
+                    }
                 }
                 
                 // update the layer group entries

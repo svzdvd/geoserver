@@ -52,7 +52,7 @@ public class RootLayerEntryPanel extends Panel {
                 return form.getConverter(type);
             }             
         };
-        styleField.setNullValid(false);
+        styleField.setNullValid(true);
         add(styleField);
         
         final ModalWindow popupWindow = new ModalWindow("popup");
