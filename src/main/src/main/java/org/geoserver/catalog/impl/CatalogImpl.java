@@ -805,14 +805,19 @@ public class CatalogImpl implements Catalog {
         //if the layer group has a workspace assigned, ensure that every resource in that layer
         // group lives within the same workspace
         if (ws != null) {
-            for (LayerInfo l : layerGroup.getLayers()) {
+            List<LayerInfo> layers = layerGroup.getLayers();
+            if (layerGroup.getRootLayer() != null) {
+                layers = new ArrayList<LayerInfo>(layers);
+                layers.add(layerGroup.getRootLayer());
+            }
+            
+            for (LayerInfo l : layers) {
                 ResourceInfo r = l.getResource();
                 if (!ws.equals(r.getStore().getWorkspace())) {
                     throw new IllegalArgumentException("Layer group within a workspace (" + 
                         ws.getName() + ") can not contain resoures from other workspace: " + 
                         r.getStore().getWorkspace().getName());
-                }
-                
+                }                
             }
         }
         
