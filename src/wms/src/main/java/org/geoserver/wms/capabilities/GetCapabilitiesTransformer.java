@@ -990,14 +990,17 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                 handleLatLonBBox(latLonBounds);
                 handleBBox(layerGroupBounds, authority);
 
-                // handle dimensions
                 if (LayerGroupInfo.Type.EO.equals(layerGroup.getType())) {
                     LayerInfo rootLayer = layerGroup.getRootLayer();
+                    
+                    // handle dimensions
                     if (rootLayer.getType() == Type.VECTOR) {
                         dimensionHelper.handleVectorLayerDimensions(rootLayer);
                     } else if (rootLayer.getType() == Type.RASTER) {
                         dimensionHelper.handleRasterLayerDimensions(rootLayer);
                     }
+                    
+                    layersAlreadyProcessed.add(layerGroup.getRootLayer());
                 }
                 
                 // handle AuthorityURL
