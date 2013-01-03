@@ -34,6 +34,7 @@ import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
 import org.geotools.data.Base64;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.security.core.Authentication;
@@ -106,6 +107,11 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         return result;
     }
 
+    @After
+    public void clean() {
+        testData = null;
+    }    
+    
     @Test
     public void testBasicAuth() throws Exception{
         
