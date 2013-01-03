@@ -29,7 +29,6 @@ import org.geoserver.security.config.J2eeAuthenticationFilterConfig;
 import org.geoserver.security.config.LogoutFilterConfig;
 import org.geoserver.security.config.PreAuthenticatedUserNameFilterConfig.RoleSource;
 import org.geoserver.security.config.RequestHeaderAuthenticationFilterConfig;
-import org.geoserver.security.config.SecurityFilterConfig;
 import org.geoserver.security.config.UsernamePasswordAuthenticationFilterConfig;
 import org.geoserver.security.config.X509CertificateAuthenticationFilterConfig;
 import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
@@ -45,7 +44,7 @@ import org.geoserver.security.impl.GeoServerUser;
 import org.geoserver.test.RunTestSetup;
 import org.geoserver.test.SystemTest;
 import org.geotools.data.Base64;
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.security.core.Authentication;
@@ -88,13 +87,9 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         getSecurityManager().saveFilter(bconfig);
     }
 
-    @Before
-    public void revertFilters() throws Exception {
-        GeoServerSecurityManager secMgr = getSecurityManager();
-        if (secMgr.listFilters().contains(testFilterName2)) {
-            SecurityFilterConfig config = secMgr.loadFilterConfig(testFilterName2);
-            secMgr.removeFilter(config);
-        }
+    @After
+    public void clean() {
+        testData = null;
     }
 
     @Test
