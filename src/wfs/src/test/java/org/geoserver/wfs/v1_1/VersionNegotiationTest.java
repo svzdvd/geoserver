@@ -8,11 +8,13 @@ import static org.junit.Assert.assertTrue;
 import net.opengis.ows10.Ows10Factory;
 import net.opengis.wfs.GetCapabilitiesType;
 import net.opengis.wfs.WfsFactory;
+
 import org.geoserver.wfs.CapabilitiesTransformer;
 import org.geoserver.wfs.GetCapabilities;
 import org.geoserver.wfs.WFSTestSupport;
 import org.geoserver.wfs.request.GetCapabilitiesRequest;
 import org.geotools.xml.transform.TransformerBase;
+import org.junit.Before;
 import org.junit.Test;
 
 public class VersionNegotiationTest extends WFSTestSupport {
@@ -23,7 +25,7 @@ public class VersionNegotiationTest extends WFSTestSupport {
 
     static Ows10Factory owsFactory;
     
-    @Test
+    @Before
     public void initialise() {
         getCaps = new GetCapabilities(getWFS(), getCatalog());
 
