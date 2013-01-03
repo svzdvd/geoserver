@@ -22,6 +22,7 @@ import org.geoserver.data.util.IOUtils;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.WFSTestSupport;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,7 +31,15 @@ import org.w3c.dom.NodeList;
 
 public class DescribeFeatureTypeTest extends WFSTestSupport {
 
-	@Override
+    @Before
+    public void disableCiteCompliance() {
+        GeoServer geoServer = getGeoServer();
+        WFSInfo service = geoServer.getService(WFSInfo.class);
+        service.setCiteCompliant(false);
+        geoServer.save(service);        
+    }    
+    
+    @Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
     	DataStoreInfo di = getCatalog().getDataStoreByName(CiteTestData.CITE_PREFIX);
     	di.setEnabled(false);

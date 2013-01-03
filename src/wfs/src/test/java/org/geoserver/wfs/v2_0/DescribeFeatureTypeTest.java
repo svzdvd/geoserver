@@ -25,6 +25,7 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wfs.GMLInfo;
 import org.geoserver.wfs.WFSInfo;
 import org.geotools.gml3.v3_2.GML;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -34,8 +35,16 @@ import org.w3c.dom.NodeList;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class DescribeFeatureTypeTest extends WFS20TestSupport {
-	
-	@Override
+
+    @Before
+    public void disableCiteCompliance() {
+        GeoServer geoServer = getGeoServer();
+        WFSInfo service = geoServer.getService(WFSInfo.class);
+        service.setCiteCompliant(false);
+        geoServer.save(service);        
+    }
+    
+    @Override
     protected void setUpInternal(SystemTestData dataDirectory) throws Exception {
     	DataStoreInfo di = getCatalog().getDataStoreByName(CiteTestData.CITE_PREFIX);
     	di.setEnabled(false);
@@ -189,6 +198,7 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         final QName typeName = CiteTestData.POLYGONS;
         String path = "ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName="
                 + typeName.getLocalPart();
+        System.out.println(getAsString(path));
         Document doc = getAsDOM(path);
         assertSchema(doc, CiteTestData.POLYGONS);
     }
