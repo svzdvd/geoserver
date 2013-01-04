@@ -852,7 +852,7 @@ public class SystemTestData extends CiteTestData {
         settings.setOnlineResource("http://geoserver.org");
         settings.setVerbose(false);
         settings.setVerboseExceptions(false);
-
+        
         if (ws != null) {
             if (settings.getId() != null) {
                 geoServer.save(settings);
@@ -885,7 +885,7 @@ public class SystemTestData extends CiteTestData {
     }
     
     @Override
-    public void tearDown() {
+    public void tearDown() throws Exception {
         try {
             FileUtils.deleteDirectory(data);
         } catch (IOException e) {
