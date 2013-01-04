@@ -20,6 +20,8 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.test.TestSetup;
+import org.geoserver.test.TestSetupFrequency;
 import org.geoserver.data.test.SystemTestData;
 import org.geotools.styling.Style;
 import org.junit.Before;
@@ -30,6 +32,7 @@ import org.w3c.dom.NodeList;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
+@TestSetup(run=TestSetupFrequency.REPEAT)
 public class StyleTest extends CatalogRESTTestSupport {
 
     @Before

@@ -27,6 +27,8 @@ import org.apache.commons.io.IOUtils;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.data.test.MockData;
+import org.geoserver.test.TestSetup;
+import org.geoserver.test.TestSetupFrequency;
 import org.h2.tools.DeleteDbFiles;
 import org.junit.After;
 import org.junit.Before;
@@ -35,6 +37,7 @@ import org.w3c.dom.Document;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
+@TestSetup(run=TestSetupFrequency.REPEAT)
 public class DataStoreFileUploadTest extends CatalogRESTTestSupport {
 
     @Before

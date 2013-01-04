@@ -21,6 +21,8 @@ import net.sf.json.JSONObject;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.test.TestSetup;
+import org.geoserver.test.TestSetupFrequency;
 import org.geotools.data.DataStore;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +32,8 @@ import org.w3c.dom.NodeList;
 
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
+
+@TestSetup(run=TestSetupFrequency.REPEAT)
 public class DataStoreTest extends CatalogRESTTestSupport {
 
     @Before
