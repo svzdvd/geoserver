@@ -198,7 +198,6 @@ public class DescribeFeatureTypeTest extends WFS20TestSupport {
         final QName typeName = CiteTestData.POLYGONS;
         String path = "ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeName="
                 + typeName.getLocalPart();
-        System.out.println(getAsString(path));
         Document doc = getAsDOM(path);
         assertSchema(doc, CiteTestData.POLYGONS);
     }
