@@ -17,7 +17,6 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Level;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogBuilder;
 import org.geoserver.catalog.CoverageInfo;
@@ -36,10 +35,8 @@ import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.GeoServerPersister;
 import org.geoserver.config.LoggingInfo;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.ServiceLoader;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.impl.GeoServerImpl;
-import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
@@ -58,7 +55,6 @@ import org.geotools.feature.NameImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Test setup uses for GeoServer system tests.
@@ -889,8 +885,12 @@ public class SystemTestData extends CiteTestData {
     }
     
     @Override
-    public void tearDown() throws Exception {
-        FileUtils.deleteDirectory(data);
+    public void tearDown() {
+        try {
+            FileUtils.deleteDirectory(data);
+        } catch (IOException e) {
+            LOGGER.warning("IOException: " + e.getMessage());
+        }
     }
     
     @Override
