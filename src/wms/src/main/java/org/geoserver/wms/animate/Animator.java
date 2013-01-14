@@ -164,7 +164,7 @@ public class Animator {
                 if (o instanceof LayerInfo) {
                     layers.add(new MapLayerInfo((LayerInfo) o));
                 } else if (o instanceof LayerGroupInfo) {
-                    for (LayerInfo l : ((LayerGroupInfo) o).layers()) {
+                    for (LayerInfo l : ((LayerGroupInfo) o).allLayersForRendering()) {
                         layers.add(new MapLayerInfo(l));
                     }
                 } else if (o instanceof MapLayerInfo) {

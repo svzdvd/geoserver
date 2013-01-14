@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.ows.xml.v1_0.OWS;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
@@ -320,7 +321,7 @@ public class GetMapXmlReader extends org.geoserver.ows.XmlRequestReader {
                 LayerGroupInfo layerGroup = getWMS().getLayerGroupByName(layerName);
 
                 if (layerGroup != null) {
-                    for (LayerInfo layer : layerGroup.layers()) {
+                    for (LayerInfo layer : layerGroup.allLayersForRendering()) {
                         currLayer = new MapLayerInfo(layer);
                         addStyles(wms, getMapRequest, currLayer, styledLayers[i], layers, styles);
                     }

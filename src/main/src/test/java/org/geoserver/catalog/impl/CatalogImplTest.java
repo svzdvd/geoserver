@@ -61,6 +61,7 @@ import org.opengis.filter.MultiValuedFilter.MatchAction;
 import org.opengis.filter.sort.SortBy;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -1943,32 +1944,32 @@ public class CatalogImplTest {
         lg2.setRootLayerStyle(s);
         
         lg2.setMode(LayerGroupInfo.Mode.SINGLE);
-        assertEquals(lg2.getLayers(), lg2.layers());
-        assertEquals(lg2.getStyles(), lg2.styles());
+        assertEquals(lg2.getLayers(), lg2.allLayersForRendering());
+        assertEquals(lg2.getStyles(), lg2.allStylesForRendering());
         
         lg2.setMode(LayerGroupInfo.Mode.NAMED);
-        assertEquals(lg2.getLayers(), lg2.layers());
-        assertEquals(lg2.getStyles(), lg2.styles());
+        assertEquals(lg2.getLayers(), lg2.allLayersForRendering());
+        assertEquals(lg2.getStyles(), lg2.allStylesForRendering());
         
         lg2.setMode(LayerGroupInfo.Mode.CONTAINER);
         try {
-            assertEquals(lg2.getLayers(), lg2.layers());
+            assertEquals(lg2.getLayers(), lg2.allLayersForRendering());
             fail("Layer group of Type Container can not be rendered");
         } catch (UnsupportedOperationException e) {
             assertTrue(true);
         }
         try {
-            assertEquals(lg2.getStyles(), lg2.styles());
+            assertEquals(lg2.getStyles(), lg2.allStylesForRendering());
             fail("Layer group of Type Container can not be rendered");
         } catch (UnsupportedOperationException e) {
             assertTrue(true);
         }        
         
         lg2.setMode(LayerGroupInfo.Mode.EO);
-        assertEquals(1, lg2.layers().size());
-        assertEquals(1, lg2.styles().size());
-        assertEquals(l, lg2.layers().get(0));
-        assertEquals(s, lg2.styles().get(0));        
+        assertEquals(1, lg2.allLayersForRendering().size());
+        assertEquals(1, lg2.allStylesForRendering().size());
+        assertEquals(l, lg2.allLayersForRendering().iterator().next());
+        assertEquals(s, lg2.allStylesForRendering().iterator().next());        
     }
     
     static class TestListener implements CatalogListener {

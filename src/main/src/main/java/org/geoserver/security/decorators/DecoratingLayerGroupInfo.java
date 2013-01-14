@@ -4,7 +4,6 @@
  */
 package org.geoserver.security.decorators;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.geoserver.catalog.AuthorityURLInfo;
@@ -13,9 +12,11 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
+import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
+import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
@@ -51,43 +52,29 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     }   
     
     @Override
-    public List<LayerInfo> getLayers() {
+    public List<PublishedInfo> getLayers() {
         return delegate.getLayers();
     }
 
-    /**
-     * Warning: method content should be the same as LayerGroupInfoImpl#layers()
-     * @Override
-     */
-    public List<LayerInfo> layers() {
-        switch (getMode()) {
-        case CONTAINER:
-            throw new UnsupportedOperationException("LayerGroup mode " + Mode.CONTAINER.getName() + " can not be rendered");
-        case EO:
-            List<LayerInfo> rootLayerList = new ArrayList<LayerInfo>(1);
-            rootLayerList.add(getRootLayer());
-            return rootLayerList;
-        default:
-            return getLayers();
-        }
+    @Override
+    public List<LayerInfo> allLayers() {
+        return LayerGroupInfoImpl.allLayers(this);     
     }
+
+    @Override
+    public List<StyleInfo> allStyles() {
+        return LayerGroupInfoImpl.allStyles(this);     
+    }    
     
-    /**
-     * Warning: method content should be the same as LayerGroupInfoImpl#styles()
-     * @Override
-     */    
-    public List<StyleInfo> styles() {
-        switch (getMode()) {
-        case CONTAINER:
-            throw new UnsupportedOperationException("LayerGroup mode " + Mode.CONTAINER.getName() + " can not be rendered");
-        case EO:
-            List<StyleInfo> rootLayerStyleList = new ArrayList<StyleInfo>(1);
-            rootLayerStyleList.add(getRootLayerStyle());
-            return rootLayerStyleList;
-        default:
-            return getStyles();
-        }        
+    @Override
+    public List<LayerInfo> allLayersForRendering() {
+        return LayerGroupInfoImpl.allLayersForRendering(this);     
     }
+
+    @Override
+    public List<StyleInfo> allStylesForRendering() {
+        return LayerGroupInfoImpl.allStylesForRendering(this);     
+    }  
     
     @Override
     public String getName() {
