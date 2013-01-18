@@ -1,9 +1,10 @@
 package org.geoserver.catalog;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 import javax.xml.namespace.QName;
 
@@ -13,6 +14,7 @@ import org.geoserver.data.test.MockTestData;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -25,6 +27,11 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
 
     private LayerGroupInfo nested;
 
+    private LayerGroupInfo loop1;
+    
+    private LayerGroupInfo loop2;
+    private LayerGroupInfo loop2Child;
+    
     private LayerInfo lakesLayer;
 
     private LayerInfo neatlineLayer;
@@ -106,8 +113,30 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         nested.getStyles().add(null);
         nested.getStyles().add(polygonStyle);
         nested.getStyles().add(null);
+        
+        loop1 = buildGroup("loop1", forestLayer);
+        loop1.getLayers().add(loop1);
+        
+        loop2 = buildGroup("loop2", forestLayer);
+        loop2Child = buildGroup("ponds", pondsLayer, loop2);
+        loop2.getLayers().add(loop2Child);
     }
 
+    @Test
+    public void testSimpleLoop() {
+        Assert.assertNull(new LayerGroupHelper(nested).checkLoops());
+        
+        LayerGroupHelper helper = new LayerGroupHelper(loop1);
+        Stack<LayerGroupInfo> path = helper.checkLoops();
+        Assert.assertNotNull(path);
+        Assert.assertEquals("/loop1/loop1", helper.getLoopAsString(path));
+        
+        helper = new LayerGroupHelper(loop2);
+        path = helper.checkLoops();
+        Assert.assertNotNull(path);
+        Assert.assertEquals("/loop2/ponds/loop2", helper.getLoopAsString(path));        
+    }
+    
     @Test
     public void testAllLayers() {
         // a plain group

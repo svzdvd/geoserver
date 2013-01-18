@@ -18,6 +18,7 @@ package org.geoserver.catalog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -213,7 +214,7 @@ public class LayerGroupHelper {
 
         group.setBounds(bounds);
     }
-
+    
     /**
      * Helper method for transforming an envelope.
      */
@@ -222,5 +223,44 @@ public class LayerGroupHelper {
             return e.transform(crs, true);
         }
         return e;
-    }     
+    }    
+    
+    public Stack<LayerGroupInfo> checkLoops() {
+        Stack<LayerGroupInfo> path = new Stack<LayerGroupInfo>();
+        if (checkLoops(group, path)) {
+            return path;
+        } else {
+            return null;
+        }
+    }
+
+    public String getLoopAsString(Stack<LayerGroupInfo> path) {
+        if (path == null) {
+            return "";
+        }
+        
+        StringBuilder s = new StringBuilder();
+        for (LayerGroupInfo g : path) {
+            s.append("/").append(g.getName());
+        }        
+        return s.toString();
+    }
+    
+    private static boolean checkLoops(LayerGroupInfo group, Stack<LayerGroupInfo> path) {
+        path.push(group);
+        
+        for (PublishedInfo child : group.getLayers()) {
+            if (child instanceof LayerGroupInfo) {
+                if (path.contains(child)) {
+                    path.push((LayerGroupInfo) child);
+                    return true;
+                } else if (checkLoops((LayerGroupInfo) child, path)) {
+                    return true;
+                }                
+            }
+        }
+        
+        path.pop();
+        return false;
+    }
 }

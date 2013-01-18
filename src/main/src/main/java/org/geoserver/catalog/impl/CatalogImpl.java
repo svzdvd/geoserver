@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -27,6 +28,7 @@ import org.geoserver.catalog.CoverageStoreInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.KeywordInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
@@ -795,6 +797,12 @@ public class CatalogImpl implements Catalog {
             throw new IllegalArgumentException( "Layer group has different number of styles than layers");
         }
 
+        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        Stack<LayerGroupInfo> loopPath = helper.checkLoops();
+        if (loopPath != null) {
+            throw new IllegalArgumentException( "Layer group is in a loop: " + helper.getLoopAsString(loopPath));
+        }
+        
         // if the layer group has a workspace assigned, ensure that every resource in that layer
         // group lives within the same workspace
         if (ws != null) {
