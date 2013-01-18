@@ -1312,7 +1312,6 @@ public class CatalogBuilder {
 
     /**
      * Calculates the bounds of a layer group specifying a particular crs.
-     * @deprecated
      */
     public void calculateLayerGroupBounds(LayerGroupInfo layerGroup, CoordinateReferenceSystem crs)
             throws Exception {
@@ -1322,7 +1321,6 @@ public class CatalogBuilder {
 
     /**
      * Calculates the bounds of a layer group by aggregating the bounds of each layer.
-     * @deprecated
      */
     public void calculateLayerGroupBounds(LayerGroupInfo layerGroup) throws Exception {
         LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
