@@ -40,8 +40,15 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     protected String path;
     protected LayerInfo rootLayer;
     protected StyleInfo rootLayerStyle;
-    protected List<PublishedInfo> layers = new ArrayList<PublishedInfo>();
+    
+    /**
+     * This property is here for compatibility purpose, in 2.3.x series it has been replaced by 'publishables'
+     */
+    protected List<LayerInfo> layers = new ArrayList<LayerInfo>();
+    
+    protected List<PublishedInfo> publishables = new ArrayList<PublishedInfo>();
     protected List<StyleInfo> styles = new ArrayList<StyleInfo>();
+    
     protected ReferencedEnvelope bounds;
     protected MetadataMap metadata = new MetadataMap();
 
@@ -64,7 +71,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     
     public LayerGroupInfoImpl() {
         mode = Mode.SINGLE;
-        layers = new ArrayList<PublishedInfo>();
+        publishables = new ArrayList<PublishedInfo>();        
         styles = new ArrayList<StyleInfo>();
         metadata = new MetadataMap();
     }
@@ -170,11 +177,25 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     
     @Override
     public List<PublishedInfo> getLayers() {
-        return layers;
+        return publishables;
     }
-
-    public void setLayers(List<PublishedInfo> layers) {
-        this.layers = layers;
+    
+    public void setLayers(List<PublishedInfo> publishables) {
+        this.publishables = publishables;
+    }
+    
+    /**
+     * Used after deserialization. 
+     * It converts 'layers' property content, used until 2.3.x, to 'publishables' property content.
+     */
+    public void convertLegacyLayers() {
+        if (layers != null && publishables == null) {
+            publishables = new ArrayList<PublishedInfo>();
+            for (LayerInfo layer : layers) {
+                publishables.add(layer);
+            }            
+            layers = null;
+        }
     }
     
     @Override
@@ -228,7 +249,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
         int result = 1;
         result = prime * result + ((bounds == null) ? 0 : bounds.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((layers == null) ? 0 : layers.hashCode());
+        result = prime * result + ((publishables == null) ? 0 : publishables.hashCode());
         result = prime * result + ((metadata == null) ? 0 : metadata.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((mode == null) ? 0 : mode.hashCode());
@@ -263,10 +284,10 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
                 return false;
         } else if (!id.equals(other.getId()))
             return false;
-        if (layers == null) {
+        if (publishables == null) {
             if (other.getLayers() != null)
                 return false;
-        } else if (!layers.equals(other.getLayers()))
+        } else if (!publishables.equals(other.getLayers()))
             return false;
         if (metadata == null) {
             if (other.getMetadata() != null)
