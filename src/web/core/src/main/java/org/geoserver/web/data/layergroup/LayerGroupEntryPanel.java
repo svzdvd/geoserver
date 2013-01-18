@@ -25,6 +25,7 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
+import org.geoserver.web.data.layergroup.AbstractLayerGroupPage.LayerGroupListPanel;
 import org.geoserver.web.data.layergroup.AbstractLayerGroupPage.LayerListPanel;
 import org.geoserver.web.data.layergroup.AbstractLayerGroupPage.StyleListPanel;
 import org.geoserver.web.wicket.GeoServerDataProvider;
@@ -85,7 +86,7 @@ public class LayerGroupEntryPanel extends Panel {
         }.setFilterable( false ));
         layerTable.setOutputMarkupId( true );
         
-        add( new AjaxLink( "add" ) {
+        add( new AjaxLink( "addLayer" ) {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 popupWindow.setInitialHeight( 375 );
@@ -107,6 +108,28 @@ public class LayerGroupEntryPanel extends Panel {
                 popupWindow.show(target);
             }
         });
+        
+        add( new AjaxLink( "addLayerGroup" ) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                popupWindow.setInitialHeight( 375 );
+                popupWindow.setInitialWidth( 525 );
+                popupWindow.setTitle(new ParamResourceModel("chooseLayerGroup", this));
+                popupWindow.setContent( new LayerGroupListPanel(popupWindow.getContentId()) {
+                    @Override
+                    protected void handleLayerGroup(LayerGroupInfo layerGroup, AjaxRequestTarget target) {
+                        popupWindow.close( target );
+                        
+                        entryProvider.getItems().add(
+                            new LayerGroupEntry( layerGroup, null ) );
+                        
+                        target.addComponent( layerTable );
+                    }
+                });
+                
+                popupWindow.show(target);
+            }
+        });        
     }
     
     public List<LayerGroupEntry> getEntries() {
