@@ -136,7 +136,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                     LayerGroupInfo layerGroupInfo = wms.getLayerGroupByName(layer);
                     if(layerGroupInfo != null) {
                         // add all single layers of the group
-                        for(LayerInfo singleLayer : layerGroupInfo.allLayersForRendering()) {
+                        for(LayerInfo singleLayer : layerGroupInfo.layers()) {
                             addLayer(layers,singleLayer,request);
                         }
                         infoObject=layerGroupInfo;
@@ -337,7 +337,7 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 // use the default one for the layer in the current position
                 if (styleName.equals("") && infoObj instanceof LayerGroupInfo) {
                     LayerGroupInfo layerGroupInfo = (LayerGroupInfo) infoObj;
-                    List<LayerInfo> groupLayers = layerGroupInfo.allLayersForRendering();
+                    List<LayerInfo> groupLayers = layerGroupInfo.layers();
                     if (pos < groupLayers.size()) {
                         sldStyles.add(getStyleFromLayer(groupLayers.get(pos)));
                     }
@@ -352,8 +352,8 @@ public class GetLegendGraphicKvpReader extends KvpRequestReader {
                 sldStyles.add(getStyleFromLayer((LayerInfo)infoObj));
             } else if(infoObj instanceof LayerGroupInfo) {
                 LayerGroupInfo layerGroupInfo=(LayerGroupInfo)infoObj;
-                List<LayerInfo> groupLayers = layerGroupInfo.allLayersForRendering();
-                List<StyleInfo> groupStyles = layerGroupInfo.allStylesForRendering();
+                List<LayerInfo> groupLayers = layerGroupInfo.layers();
+                List<StyleInfo> groupStyles = layerGroupInfo.styles();
                 for (int count = 0; count < groupLayers.size(); count++) {
                     if (count < groupStyles.size() && groupStyles.get(count) != null) {
                         sldStyles.add(groupStyles.get(count).getStyle());

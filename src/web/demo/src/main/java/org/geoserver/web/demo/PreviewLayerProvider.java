@@ -70,12 +70,12 @@ public class PreviewLayerProvider extends GeoServerDataProvider<PreviewLayer> {
         for (LayerGroupInfo group :layerGroups ) {
             if (!LayerGroupInfo.Mode.CONTAINER.equals(group.getMode())) {            
                 boolean enabled = true;
-                for (LayerInfo layer : group.allLayersForRendering()) {
+                for (LayerInfo layer : group.layers()) {
                     // ask for enabled() instead of isEnabled() to account for disabled resource/store
                     enabled &= layer.enabled();
                 }
                 
-                if (enabled && group.getLayers().size() > 0)
+                if (enabled && group.layers().size() > 0)
                     result.add(new PreviewLayer(group));
             }
         }

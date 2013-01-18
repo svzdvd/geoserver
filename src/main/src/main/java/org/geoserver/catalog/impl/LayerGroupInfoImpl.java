@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -17,10 +18,6 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.TransformException;
 
 
 public class LayerGroupInfoImpl implements LayerGroupInfo {
@@ -188,119 +185,17 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     public void setStyles(List<StyleInfo> styles) {
         this.styles = styles;
     }    
-
-    @Override
-    public List<LayerInfo> allLayers() {
-        return allLayers(this);
-    }
     
     @Override
-    public List<StyleInfo> allStyles() {
-        return allStyles(this);
-    }
-    
-    @Override
-    public List<LayerInfo> allLayersForRendering() {
-        return allLayersForRendering(this);
+    public List<LayerInfo> layers() {
+        LayerGroupHelper helper = new LayerGroupHelper(this);
+        return helper.allLayersForRendering();
     }
     
     @Override    
-    public List<StyleInfo> allStylesForRendering() {
-        return allStylesForRendering(this);
-    }
-        
-    public static List<LayerInfo> allLayers(LayerGroupInfo group) {
-        List<LayerInfo> layers = new ArrayList<LayerInfo>();
-        allLayers(group, layers);
-        return layers;
-    }    
-  
-    private static void allLayers(LayerGroupInfo group, List<LayerInfo> layers) {
-        if (LayerGroupInfo.Mode.EO.equals(group.getMode())) {
-            layers.add(group.getRootLayer());
-        }
-        
-        for (PublishedInfo p : group.getLayers()) {
-            if (p instanceof LayerInfo) {
-                LayerInfo l = (LayerInfo) p;
-                layers.add(l);
-            } else {
-                allLayers((LayerGroupInfo) p, layers);
-            }
-        }        
-    }
-    
-    public static List<StyleInfo> allStyles(LayerGroupInfo group) {
-        List<StyleInfo> styles = new ArrayList<StyleInfo>();
-        allStyles(group, styles);
-        return styles;
-    }      
-
-    private static void allStyles(LayerGroupInfo group, List<StyleInfo> styles) {
-        if (LayerGroupInfo.Mode.EO.equals(group.getMode())) {
-            styles.add(group.getRootLayerStyle());
-        }
-                
-        int size = group.getLayers().size();
-        for (int i = 0; i < size; i++) {
-            PublishedInfo p = group.getLayers().get(i);
-            if (p instanceof LayerInfo) {
-                styles.add(group.getStyles().get(i));
-            } else {
-                allStyles((LayerGroupInfo) p, styles);
-            }
-        }
-    }
-    
-    public static List<LayerInfo> allLayersForRendering(LayerGroupInfo group) {
-        List<LayerInfo> layers = new ArrayList<LayerInfo>();
-        allLayersForRendering(group, layers);
-        return layers;
-    }
-    
-    private static void allLayersForRendering(LayerGroupInfo group, List<LayerInfo> layers) {
-        switch (group.getMode()) {
-        case CONTAINER:
-            throw new UnsupportedOperationException("LayerGroup mode " + Mode.CONTAINER.getName() + " can not be rendered");
-        case EO:
-            layers.add(group.getRootLayer());
-            break;
-        default:
-            for (PublishedInfo p : group.getLayers()) {
-                if (p instanceof LayerInfo) {
-                    LayerInfo l = (LayerInfo) p;
-                    layers.add(l);
-                } else {
-                    allLayersForRendering((LayerGroupInfo) p, layers);
-                }
-            }
-        }        
-    }
-
-    public static List<StyleInfo> allStylesForRendering(LayerGroupInfo group) {
-        List<StyleInfo> styles = new ArrayList<StyleInfo>();
-        allStylesForRendering(group, styles);
-        return styles;
-    }    
-    
-    private static void allStylesForRendering(LayerGroupInfo group, List<StyleInfo> styles) {
-        switch (group.getMode()) {
-        case CONTAINER:
-            throw new UnsupportedOperationException("LayerGroup mode " + Mode.CONTAINER.getName() + " can not be rendered");
-        case EO:
-            styles.add(group.getRootLayerStyle());
-            break;
-        default:
-            int size = group.getLayers().size();
-            for (int i = 0; i < size; i++) {
-                PublishedInfo p = group.getLayers().get(i);
-                if (p instanceof LayerInfo) {
-                    styles.add(group.getStyles().get(i));
-                } else {
-                    allStylesForRendering((LayerGroupInfo) p, styles);
-                }
-            }            
-        }                
+    public List<StyleInfo> styles() {
+        LayerGroupHelper helper = new LayerGroupHelper(this);
+        return helper.allStylesForRendering();
     }
     
     @Override
@@ -453,74 +348,7 @@ public class LayerGroupInfoImpl implements LayerGroupInfo {
     
     public void setIdentifiers(List<LayerIdentifierInfo> identifiers){
         this.identifiers = identifiers;
-    }
-
-    public static void calculateBounds(LayerGroupInfo group, CoordinateReferenceSystem crs) throws Exception {
-        List<LayerInfo> layers = allLayers(group);        
-        if (layers.isEmpty()) {
-            return;
-        }        
-        
-        LayerInfo l = layers.get(0);
-        ReferencedEnvelope bounds = transform(l.getResource().getLatLonBoundingBox(), crs);
-
-        for (int i = 1; i < layers.size(); i++) {
-            l = layers.get(i);
-            bounds.expandToInclude(transform(l.getResource().getLatLonBoundingBox(), crs));
-        }
-        
-        group.setBounds(bounds);
-    }
-    
-    public static void calculateBounds(LayerGroupInfo layerGroup) throws Exception {
-        List<LayerInfo> layers = allLayers(layerGroup);       
-        if (layers.isEmpty()) {
-            return;
-        }
-        
-        LayerInfo l = layers.get(0);
-        ReferencedEnvelope bounds = l.getResource().boundingBox();
-        boolean latlon = false;
-        if (bounds == null) {
-            bounds = l.getResource().getLatLonBoundingBox();
-            latlon = true;
-        }
-
-        if (bounds == null) {
-            throw new IllegalArgumentException(
-                    "Could not calculate bounds from layer with no bounds, " + l.getName());
-        }
-
-        for (int i = 1; i < layers.size(); i++) {
-            l = layers.get(i);
-
-            ReferencedEnvelope re;
-            if (latlon) {
-                re = l.getResource().getLatLonBoundingBox();
-            } else {
-                re = l.getResource().boundingBox();
-            }
-
-            re = transform(re, bounds.getCoordinateReferenceSystem());
-            if (re == null) {
-                throw new IllegalArgumentException(
-                        "Could not calculate bounds from layer with no bounds, " + l.getName());
-            }
-            bounds.expandToInclude(re);
-        }
-
-        layerGroup.setBounds(bounds);
-    }
-
-    /**
-     * Helper method for transforming an envelope.
-     */
-    private static ReferencedEnvelope transform(ReferencedEnvelope e, CoordinateReferenceSystem crs) throws TransformException, FactoryException {
-        if (!CRS.equalsIgnoreMetadata(crs, e.getCoordinateReferenceSystem())) {
-            return e.transform(crs, true);
-        }
-        return e;
-    }    
+    }   
     
     @Override
     public String toString() {

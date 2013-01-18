@@ -1944,32 +1944,32 @@ public class CatalogImplTest {
         lg2.setRootLayerStyle(s);
         
         lg2.setMode(LayerGroupInfo.Mode.SINGLE);
-        assertEquals(lg2.getLayers(), lg2.allLayersForRendering());
-        assertEquals(lg2.getStyles(), lg2.allStylesForRendering());
+        assertEquals(lg2.getLayers(), lg2.layers());
+        assertEquals(lg2.getStyles(), lg2.styles());
         
         lg2.setMode(LayerGroupInfo.Mode.NAMED);
-        assertEquals(lg2.getLayers(), lg2.allLayersForRendering());
-        assertEquals(lg2.getStyles(), lg2.allStylesForRendering());
+        assertEquals(lg2.getLayers(), lg2.layers());
+        assertEquals(lg2.getStyles(), lg2.styles());
         
         lg2.setMode(LayerGroupInfo.Mode.CONTAINER);
         try {
-            assertEquals(lg2.getLayers(), lg2.allLayersForRendering());
+            assertEquals(lg2.getLayers(), lg2.layers());
             fail("Layer group of Type Container can not be rendered");
         } catch (UnsupportedOperationException e) {
             assertTrue(true);
         }
         try {
-            assertEquals(lg2.getStyles(), lg2.allStylesForRendering());
+            assertEquals(lg2.getStyles(), lg2.styles());
             fail("Layer group of Type Container can not be rendered");
         } catch (UnsupportedOperationException e) {
             assertTrue(true);
         }        
         
         lg2.setMode(LayerGroupInfo.Mode.EO);
-        assertEquals(1, lg2.allLayersForRendering().size());
-        assertEquals(1, lg2.allStylesForRendering().size());
-        assertEquals(l, lg2.allLayersForRendering().iterator().next());
-        assertEquals(s, lg2.allStylesForRendering().iterator().next());        
+        assertEquals(1, lg2.layers().size());
+        assertEquals(1, lg2.styles().size());
+        assertEquals(l, lg2.layers().iterator().next());
+        assertEquals(s, lg2.styles().iterator().next());        
     }
     
     static class TestListener implements CatalogListener {

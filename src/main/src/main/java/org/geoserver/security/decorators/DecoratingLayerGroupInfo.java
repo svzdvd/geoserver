@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.geoserver.catalog.AuthorityURLInfo;
 import org.geoserver.catalog.CatalogVisitor;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerIdentifierInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -16,7 +17,6 @@ import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.AbstractDecorator;
-import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
@@ -55,25 +55,17 @@ public class DecoratingLayerGroupInfo extends AbstractDecorator<LayerGroupInfo> 
     public List<PublishedInfo> getLayers() {
         return delegate.getLayers();
     }
-
-    @Override
-    public List<LayerInfo> allLayers() {
-        return LayerGroupInfoImpl.allLayers(this);     
-    }
-
-    @Override
-    public List<StyleInfo> allStyles() {
-        return LayerGroupInfoImpl.allStyles(this);     
-    }    
     
     @Override
-    public List<LayerInfo> allLayersForRendering() {
-        return LayerGroupInfoImpl.allLayersForRendering(this);     
+    public List<LayerInfo> layers() {
+        LayerGroupHelper helper = new LayerGroupHelper(this);
+        return helper.allLayersForRendering();
     }
 
     @Override
-    public List<StyleInfo> allStylesForRendering() {
-        return LayerGroupInfoImpl.allStylesForRendering(this);     
+    public List<StyleInfo> styles() {
+        LayerGroupHelper helper = new LayerGroupHelper(this);
+        return helper.allStylesForRendering();
     }  
     
     @Override

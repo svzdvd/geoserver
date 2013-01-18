@@ -1316,7 +1316,8 @@ public class CatalogBuilder {
      */
     public void calculateLayerGroupBounds(LayerGroupInfo layerGroup, CoordinateReferenceSystem crs)
             throws Exception {
-        LayerGroupInfoImpl.calculateBounds(layerGroup, crs);
+        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        helper.calculateBounds(crs);
     }
 
     /**
@@ -1324,7 +1325,8 @@ public class CatalogBuilder {
      * @deprecated
      */
     public void calculateLayerGroupBounds(LayerGroupInfo layerGroup) throws Exception {
-        LayerGroupInfoImpl.calculateBounds(layerGroup);
+        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        helper.calculateBounds();
     }
 
     //

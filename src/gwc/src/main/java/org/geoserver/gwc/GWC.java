@@ -34,6 +34,7 @@ import javax.xml.XMLConstants;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
+import org.geoserver.catalog.LayerGroupHelper;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
@@ -1167,7 +1168,7 @@ public class GWC implements DisposableBean, InitializingBean {
             if (!tileLayerExists(tileLayerName)) {
                 continue;
             }
-            for (LayerInfo li : lgi.allLayersForRendering()) {
+            for (LayerInfo li : lgi.layers()) {
                 ResourceInfo resource = li.getResource();
                 if (typeInfo.equals(resource)) {
                     affectedLayers.add(tileLayerName);
@@ -1420,8 +1421,9 @@ public class GWC implements DisposableBean, InitializingBean {
         List<LayerGroupInfo> layerGroups = new ArrayList<LayerGroupInfo>();
 
         for (LayerGroupInfo layerGroup : getLayerGroups()) {
-            final Iterator<LayerInfo> groupLayers = layerGroup.allLayers().iterator();
-            final Iterator<StyleInfo> explicitLayerGroupStyles = layerGroup.allStyles().iterator();
+            LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+            final Iterator<LayerInfo> groupLayers = helper.allLayers().iterator();
+            final Iterator<StyleInfo> explicitLayerGroupStyles = helper.allStyles().iterator();
 
             while (groupLayers.hasNext()) {
                 LayerInfo childLayer = groupLayers.next();

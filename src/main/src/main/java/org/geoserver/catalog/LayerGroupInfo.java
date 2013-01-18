@@ -124,27 +124,17 @@ public interface LayerGroupInfo extends PublishedInfo {
     List<StyleInfo> getStyles();
     
     /**
-     * All layers contained in this group and its children groups.
-     */
-    List<LayerInfo> allLayers();
-    
-    /**
-     * All styles contained in this group and its children groups.
-     * <p>
-     * This list is a 1-1 correspondence to {@link #allLayers()}.
-     * </p>
-     */
-    List<StyleInfo> allStyles();
-    
-    /**
+     * 
      * @return
      */
-    List<LayerInfo> allLayersForRendering();
+    List<LayerInfo> layers();
 
     /**
+     * 
+     * 
      * @return
      */
-    List<StyleInfo> allStylesForRendering();  
+    List<StyleInfo> styles();  
         
     /**
      * The bounds for the base map.
