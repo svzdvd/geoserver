@@ -294,6 +294,7 @@ public class XStreamPersister {
         xs.alias( "attribute", AttributeTypeInfo.class );
         xs.alias( "layer", LayerInfo.class);
         xs.alias( "layerGroup", LayerGroupInfo.class);
+        xs.alias( "published", PublishedInfo.class);
         xs.alias( "gridGeometry", GridGeometry2D.class);
         xs.alias( "projected", DefaultProjectedCRS.class);
         xs.alias( "attribution", AttributionInfo.class );
