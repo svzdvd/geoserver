@@ -33,6 +33,7 @@ import org.geoserver.test.RemoteOWSTestSupport;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wms.WMSInfo;
 import org.geoserver.wms.WMSTestSupport;
+import org.geoserver.wms.featureinfo.XMLFeatureInfoOutputFormat;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Rule;
@@ -42,6 +43,8 @@ import org.geotools.util.logging.Logging;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.w3c.dom.Document;
+
+import com.mockrunner.mock.web.MockHttpServletResponse;
 
 public class GetFeatureInfoTest extends WMSTestSupport {
     
@@ -668,4 +671,22 @@ public class GetFeatureInfoTest extends WMSTestSupport {
        Document dom = getAsDOM(request);
        assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
    }
+   
+   @Test
+   public void testXmlGetFeatureInfo() throws Exception {
+       String layer = getLayerId(MockData.FORESTS);
+       String request = "wms?version=1.1.1&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+               + "&request=GetFeatureInfo&layers=" + layer + "&query_layers=" + layer
+               + "&width=20&height=20&x=10&y=10" + "&info_format=" + XMLFeatureInfoOutputFormat.FORMAT;
+
+       MockHttpServletResponse response = getAsServletResponse(request);
+
+       // MimeType
+       assertEquals(XMLFeatureInfoOutputFormat.FORMAT, response.getContentType());
+
+       // Content
+       Document dom = getAsDOM(request);        
+       assertXpathEvaluatesTo("109", "//wfs:FeatureCollection/gml:featureMembers/cite:Forests/cite:FID", dom);
+       assertXpathEvaluatesTo("Green Forest", "//wfs:FeatureCollection/gml:featureMembers/cite:Forests/cite:NAME", dom);
+   }   
 }
